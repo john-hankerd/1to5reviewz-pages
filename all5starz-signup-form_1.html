@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Started — all5starz</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5a623;
+      --gold-light: #fff8ed;
+      --dark: #1a1a1a;
+      --mid: #4a4a4a;
+      --muted: #888;
+      --border: #e2e2e2;
+      --white: #ffffff;
+      --success: #2e7d32;
+      --error: #c62828;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f7f7f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--dark);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .logo span {
+      color: var(--gold);
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 2rem 2rem 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+      line-height: 1.5;
+    }
+
+    /* ── Form fields ── */
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+
+    .field .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245,166,35,0.12);
+    }
+
+    .field input.error {
+      border-color: var(--error);
+    }
+
+    .field .error-msg {
+      display: none;
+      font-size: 11px;
+      color: var(--error);
+      margin-top: 4px;
+    }
+
+    .field input.error + .error-msg,
+    .field .error-msg.visible {
+      display: block;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Plan toggle ── */
+    .plan-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .plan-option {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+
+    .plan-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .plan-option.selected {
+      border-color: var(--gold);
+      background: var(--gold-light);
+    }
+
+    .plan-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .plan-price {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .plan-price strong {
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    .plan-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--gold);
+      color: #fff;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--dark);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:hover { background: #333; }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* ── Stars deco ── */
+    .stars-deco {
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Success screen ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .success-screen.visible { display: block; }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+    }
+
+    .success-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .success-body {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .form-body { transition: opacity 0.2s; }
+    .form-body.hidden { display: none; }
+
+    /* ── Footer note ── */
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1.25rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.5rem 1.25rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="logo">all5<span>starz</span></div>
+    <div class="tagline">Turn every visit into a 5-star review</div>
+  </div>
+
+  <div class="card">
+
+    <div class="form-body" id="formBody">
+
+      <div class="stars-deco">★★★★★</div>
+      <div class="card-title">Get your review page set up</div>
+      <div class="card-sub">Fill this out once. We'll build your page, send you everything you need, and you'll be collecting 5-star reviews today.</div>
+
+      <div class="section-label">Your business</div>
+
+      <div class="field">
+        <label for="bizName">Business name</label>
+        <input type="text" id="bizName" name="business_name" placeholder="e.g. Riverside Family Dentistry" autocomplete="organization" />
+        <div class="error-msg" id="bizNameErr">Please enter your business name.</div>
+      </div>
+
+      <div class="field">
+        <label for="ownerName">Your name</label>
+        <input type="text" id="ownerName" name="owner_name" placeholder="First and last name" autocomplete="name" />
+        <div class="error-msg" id="ownerNameErr">Please enter your name.</div>
+      </div>
+
+      <div class="field">
+        <label for="bizEmail">Email for customer feedback</label>
+        <input type="email" id="bizEmail" name="feedback_email" placeholder="you@yourbusiness.com" autocomplete="email" />
+        <div class="hint">When a customer leaves less than 5 stars, their feedback goes here — not to Google.</div>
+        <div class="error-msg" id="bizEmailErr">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label for="bizPhone">Your mobile number</label>
+        <input type="tel" id="bizPhone" name="phone" placeholder="(555) 555-5555" autocomplete="tel" />
+        <div class="hint">We'll text you when your page is live.</div>
+      </div>
+
+      <hr class="divider" />
+      <div class="section-label">Your Google review link</div>
+
+      <div class="field">
+        <label for="googleLink">Google review link</label>
+        <input type="url" id="googleLink" name="google_review_url" placeholder="https://g.page/r/..." />
+        <div class="hint">Go to your Google Business Profile → click "Ask for reviews" → copy that link and paste it here.</div>
+        <div class="error-msg" id="googleLinkErr">Please paste your Google review link.</div>
+      </div>
+
+      <hr class="divider" />
+      <div class="section-label">Choose your plan</div>
+
+      <div class="plan-row">
+        <label class="plan-option selected" id="planMonthly">
+          <input type="radio" name="plan" value="monthly" checked />
+          <div class="plan-name">Monthly</div>
+          <div class="plan-price"><strong>$19</strong>/mo</div>
+        </label>
+        <label class="plan-option" id="planAnnual">
+          <input type="radio" name="plan" value="annual" />
+          <div class="plan-name">Annual</div>
+          <div class="plan-price"><strong>$190</strong>/yr</div>
+          <div class="plan-badge">2 months free</div>
+        </label>
+      </div>
+
+      <button class="btn-submit" id="submitBtn">Get my review page →</button>
+
+      <div class="footer-note">
+        No long-term contract. Cancel anytime.<br />
+        You'll be redirected to checkout after this step.
+      </div>
+
+    </div>
+
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">⭐</div>
+      <div class="success-title">You're all set!</div>
+      <div class="success-body">
+        Check your inbox — we're sending your review page link, your ready-to-use text and email templates, and your printable QR code PDF right now.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ── Plan toggle ── */
+    const planMonthly = document.getElementById('planMonthly');
+    const planAnnual = document.getElementById('planAnnual');
+
+    planMonthly.addEventListener('click', () => {
+      planMonthly.classList.add('selected');
+      planAnnual.classList.remove('selected');
+    });
+
+    planAnnual.addEventListener('click', () => {
+      planAnnual.classList.add('selected');
+      planMonthly.classList.remove('selected');
+    });
+
+    /* ── Phone formatting ── */
+    document.getElementById('bizPhone').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 10);
+      if (v.length >= 7) v = '(' + v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6);
+      else if (v.length >= 4) v = '(' + v.slice(0,3) + ') ' + v.slice(3);
+      else if (v.length > 0) v = '(' + v;
+      this.value = v;
+    });
+
+    /* ── Validation helpers ── */
+    function showErr(inputEl, errEl) {
+      inputEl.classList.add('error');
+      errEl.classList.add('visible');
+    }
+
+    function clearErr(inputEl, errEl) {
+      inputEl.classList.remove('error');
+      errEl.classList.remove('visible');
+    }
+
+    ['bizName','ownerName','bizEmail','googleLink'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function () {
+        this.classList.remove('error');
+        const errEl = document.getElementById(id + 'Err');
+        if (errEl) errEl.classList.remove('visible');
+      });
+    });
+
+    /* ── Submit ── */
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const bizName    = document.getElementById('bizName');
+      const ownerName  = document.getElementById('ownerName');
+      const bizEmail   = document.getElementById('bizEmail');
+      const googleLink = document.getElementById('googleLink');
+
+      let valid = true;
+
+      if (!bizName.value.trim()) {
+        showErr(bizName, document.getElementById('bizNameErr')); valid = false;
+      }
+      if (!ownerName.value.trim()) {
+        showErr(ownerName, document.getElementById('ownerNameErr')); valid = false;
+      }
+      if (!bizEmail.value.trim() || !bizEmail.value.includes('@')) {
+        showErr(bizEmail, document.getElementById('bizEmailErr')); valid = false;
+      }
+      if (!googleLink.value.trim() || !googleLink.value.startsWith('http')) {
+        showErr(googleLink, document.getElementById('googleLinkErr')); valid = false;
+      }
+
+      if (!valid) return;
+
+      /* 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  ZAPIER WEBHOOK: Replace this URL with your Zapier      ║
+        ║  "Catch Hook" trigger URL once you set up your Zap.     ║
+        ╚══════════════════════════════════════════════════════════╝
+      */
+      const ZAPIER_WEBHOOK = const ZAPIER_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/YOUR_ZAPIER_HOOK_ID/';
+
+      const plan = document.querySelector('input[name="plan"]:checked').value;
+
+      const payload = {
+        business_name:     bizName.value.trim(),
+        owner_name:        ownerName.value.trim(),
+        feedback_email:    bizEmail.value.trim(),
+        phone:             document.getElementById('bizPhone').value.trim(),
+        google_review_url: googleLink.value.trim(),
+        plan:              plan,
+        slug:              bizName.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        submitted_at:      new Date().toISOString()
+      };
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Setting up your page...';
+
+      fetch(ZAPIER_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        document.getElementById('formBody').classList.add('hidden');
+        document.getElementById('successScreen').classList.add('visible');
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = 'Get my review page →';
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  </script>
+
+</body>
+</html>
