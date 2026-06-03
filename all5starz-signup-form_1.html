@@ -446,9 +446,10 @@
         ║  "Catch Hook" trigger URL once you set up your Zap.     ║
         ╚══════════════════════════════════════════════════════════╝
       */
-      const ZAPIER_WEBHOOK = const ZAPIER_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/YOUR_ZAPIER_HOOK_ID/';
+      const ZAPIER_WEBHOOK = 'https://hook.us2.make.com/7ocfta8ahsw7hvcu8r2ajtha5dvfvf7r';
 
-      const plan = document.querySelector('input[name="plan"]:checked').value;
+      const planEl = document.querySelector('input[name="plan"]:checked');
+      const plan = planEl ? planEl.value : 'monthly';
 
       const payload = {
         business_name:     bizName.value.trim(),
