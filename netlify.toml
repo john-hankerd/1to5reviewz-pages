@@ -2,11 +2,39 @@
   publish = "."
   functions = "netlify/functions"
 
+# all5starz.com → sales page
+[[redirects]]
+  from = "https://all5starz.com/"
+  to = "/all5starz-index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.all5starz.com/"
+  to = "/all5starz-index.html"
+  status = 200
+  force = true
+
+# all5starz.com/thank-you → thank you page
+[[redirects]]
+  from = "https://all5starz.com/thank-you"
+  to = "/thank-you.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.all5starz.com/thank-you"
+  to = "/thank-you.html"
+  status = 200
+  force = true
+
+# 1to5reviewz.com /r/* → individual review pages
 [[redirects]]
   from = "/r/*"
   to = "/r/:splat/index.html"
   status = 200
 
+# Security headers
 [[headers]]
   for = "/*"
   [headers.values]
