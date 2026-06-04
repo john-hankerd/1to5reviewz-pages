@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to All5Starz!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-bg: #faf8f4;
+      --color-bg-dark: #0f1419;
+      --color-ink: #0f1419;
+      --color-ink-soft: #4a5258;
+      --color-muted: #8a8e91;
+      --color-gold: #d4a017;
+      --color-gold-deep: #b8860b;
+      --color-gold-soft: #f5e6b8;
+      --color-line: #e8e2d4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--color-bg); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; -webkit-font-smoothing: antialiased; }
+    .card { background: #fff; border-radius: 24px; max-width: 600px; width: 100%; padding: 64px 48px; text-align: center; box-shadow: 0 24px 64px rgba(15, 20, 25, 0.08); position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, var(--color-gold-soft) 0%, transparent 70%); opacity: 0.6; }
+    .check-icon { width: 80px; height: 80px; background: var(--color-gold); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.6rem; margin: 0 auto 24px; position: relative; z-index: 1; animation: pop 0.5s ease-out; }
+    @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+    h1 { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 12px; position: relative; z-index: 1; }
+    h1 em { font-style: italic; color: var(--color-gold-deep); }
+    .subtitle { color: var(--color-ink-soft); font-size: 1.1rem; margin-bottom: 36px; position: relative; z-index: 1; }
+    .url-box { background: var(--color-gold-soft); border-radius: 14px; padding: 24px; margin: 32px 0; position: relative; z-index: 1; }
+    .url-box .label { font-size: 0.82rem; color: var(--color-gold-deep); font-weight: 600; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .url-box .link { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--color-ink); word-break: break-all; text-decoration: none; display: block; }
+    .url-box .link:hover { color: var(--color-gold-deep); }
+    .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; position: relative; z-index: 1; }
+    .btn { padding: 14px 28px; border-radius: 100px; text-decoration: none; font-weight: 600; font-size: 0.98rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-family: inherit; }
+    .btn-primary { background: var(--color-ink); color: #fff; }
+    .btn-primary:hover { background: var(--color-gold-deep); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: var(--color-ink); border: 1.5px solid var(--color-line); }
+    .btn-secondary:hover { border-color: var(--color-gold); color: var(--color-gold-deep); }
+    .next-steps { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--color-line); text-align: left; position: relative; z-index: 1; }
+    .next-steps h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 16px; }
+    .next-steps ol { padding-left: 24px; color: var(--color-ink-soft); line-height: 1.8; }
+    .next-steps li { margin-bottom: 8px; }
+    .footer-note { margin-top: 36px; font-size: 0.88rem; color: var(--color-muted); position: relative; z-index: 1; }
+    @media (max-width: 600px) { .card { padding: 40px 24px; } h1 { font-size: 1.8rem; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="check-icon">★</div>
+    <h1>You're <em>in!</em></h1>
+    <p class="subtitle">Payment received. Your review page is being set up right now.</p>
+
+    <div class="url-box">
+      <div class="label">YOUR REVIEW PAGE</div>
+      <a href="#" id="review-link" class="link">Loading...</a>
+    </div>
+
+    <div class="actions">
+      <a href="#" id="view-page-btn" class="btn btn-primary" target="_blank">View My Page →</a>
+      <button id="copy-btn" class="btn btn-secondary">📋 Copy Link</button>
+    </div>
+
+    <div class="next-steps">
+      <h2>What happens next</h2>
+      <ol>
+        <li>Check your email for a welcome message with your printable QR card</li>
+        <li>Print the QR card and put it on your counter or in your vehicle</li>
+        <li>Share your review page link with every customer</li>
+        <li>Watch the 5-star reviews roll in</li>
+      </ol>
+    </div>
+
+    <p class="footer-note">
+      Questions? Email <a href="mailto:info@all5starz.com" style="color: var(--color-gold-deep); text-decoration: none; font-weight: 600;">info@all5starz.com</a>
+    </p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+
+    if (slug) {
+      const url = `https://1to5reviewz.com/r/${slug}`;
+      document.getElementById('review-link').textContent = url;
+      document.getElementById('review-link').href = url;
+      document.getElementById('view-page-btn').href = url;
+
+      document.getElementById('copy-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(url).then(() => {
+          const btn = document.getElementById('copy-btn');
+          const original = btn.textContent;
+          btn.textContent = '✓ Copied!';
+          setTimeout(() => btn.textContent = original, 2000);
+        });
+      });
+    } else {
+      document.getElementById('review-link').textContent = 'Check your email for your link';
+    }
+  </script>
+</body>
+</html>
