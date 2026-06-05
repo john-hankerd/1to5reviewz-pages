@@ -100,14 +100,24 @@ exports.handler = async (event) => {
 
   try {
     const result = await httpsRequest(callOptions, reviewPagePayload);
-    if (result.status !== 200) {
-      console.error("Review page creation failed:", result.body);
-      return { statusCode: 500, body: `Review page creation failed: ${result.body}` };
+
+    // Treat 200 as success
+    if (result.status === 200) {
+      console.log("Review page created successfully");
+      return { statusCode: 200, body: "OK" };
     }
+
+    // If GitHub returned 422 (file already exists), the file is already
+    // created from a previous webhook delivery — treat as success.
+    if (result.body && result.body.includes("422")) {
+      console.log("Review page already exists (duplicate webhook) - treating as success");
+      return { statusCode: 200, body: "OK - already exists" };
+    }
+
+    console.error("Review page creation failed:", result.body);
+    return { statusCode: 500, body: `Review page creation failed: ${result.body}` };
   } catch (err) {
     console.error("Review page request error:", err.message);
     return { statusCode: 500, body: err.message };
   }
-
-  return { statusCode: 200, body: "OK" };
 };
