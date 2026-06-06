@@ -35,6 +35,18 @@ function stripePost(path, body) {
   });
 }
 
+// Generate a URL-safe slug from a business name
+// (Same logic as create-review-page.js so slugs match)
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/['']/g, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .substring(0, 50);
+}
+
 exports.handler = async (event) => {
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -60,20 +72,23 @@ exports.handler = async (event) => {
   const {
     business_name,
     owner_name,
-    feedback_email,
+    email,
     phone,
-    google_review_url,
-    slug,
+    place_id,
+    formatted_address,
     plan,
   } = payload;
 
-  if (!business_name || !slug || !google_review_url || !feedback_email) {
+  if (!business_name || !email || !place_id) {
     return {
       statusCode: 400,
       headers: corsHeaders,
       body: JSON.stringify({ error: "Missing required fields" }),
     };
   }
+
+  // Generate slug from business name so we can use it in the success URL
+  const slug = slugify(business_name);
 
   const priceId = plan === "yearly"
     ? process.env.PRICE_ANNUAL
@@ -84,19 +99,20 @@ exports.handler = async (event) => {
     "payment_method_types[]": "card",
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
-    customer_email: feedback_email,
+    customer_email: email,
     success_url: `https://all5starz.com/thank-you?slug=${encodeURIComponent(slug)}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: "https://all5starz.com/#signup",
     "metadata[business_name]": business_name,
     "metadata[owner_name]": owner_name || "",
-    "metadata[feedback_email]": feedback_email,
+    "metadata[email]": email,
     "metadata[phone]": phone || "",
-    "metadata[google_review_url]": google_review_url,
+    "metadata[place_id]": place_id,
+    "metadata[formatted_address]": formatted_address || "",
     "metadata[slug]": slug,
     "metadata[plan]": plan || "monthly",
     "subscription_data[metadata][business_name]": business_name,
     "subscription_data[metadata][slug]": slug,
-    "subscription_data[metadata][feedback_email]": feedback_email,
+    "subscription_data[metadata][email]": email,
     allow_promotion_codes: "true",
   };
 
