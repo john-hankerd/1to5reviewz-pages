@@ -1,0 +1,101 @@
+<!-- Welcome email HTML — drop this into create-review-page.js Resend send -->
+<!-- Required template variables: {{BUSINESS_NAME}}, {{OWNER_FIRST_NAME}}, {{REVIEW_URL}}, {{SLUG}} -->
+<!-- REVIEW_URL example: https://1to5reviewz.com/r/final-end-to-end-test -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Welcome to All5Starz</title>
+</head>
+<body style="margin:0; padding:0; background:#f5f5f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f5f5f0; padding:20px 0;">
+  <tr>
+    <td align="center">
+
+      <!-- Card -->
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%;">
+
+        <!-- Navy header -->
+        <tr>
+          <td style="background:#1a2332; padding:32px 24px; text-align:center; border-radius:8px 8px 0 0;">
+            <div style="font-size:28px; font-weight:700; color:#F59E0B; margin:0;">⭐ All5Starz</div>
+            <div style="color:#d1d5db; font-size:14px; margin-top:6px;">Protect your reputation. Capture every issue privately.</div>
+          </td>
+        </tr>
+
+        <!-- White body -->
+        <tr>
+          <td style="background:#ffffff; padding:32px 28px;">
+
+            <h1 style="margin:0 0 16px; font-size:22px; color:#1f2937;">You're all set, {{OWNER_FIRST_NAME}}! 🎉</h1>
+
+            <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:#1f2937;">
+              Your review page for <strong>{{BUSINESS_NAME}}</strong> is live. Share it with every customer. Happy customers go straight to Google. Everyone else sends you private feedback.
+            </p>
+
+            <!-- Review URL box -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#fef3c7; border:2px solid #F59E0B; border-radius:10px; margin:0 0 24px;">
+              <tr>
+                <td style="padding:16px; text-align:center;">
+                  <div style="font-size:13px; color:#78350f; margin-bottom:4px;">Your review page:</div>
+                  <a href="{{REVIEW_URL}}" style="font-size:17px; font-weight:700; color:#92400e; text-decoration:none;">{{REVIEW_URL}}</a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- View Review Page button -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;">
+              <tr>
+                <td align="center">
+                  <a href="{{REVIEW_URL}}" style="display:inline-block; background:#F59E0B; color:#1a2332; padding:14px 28px; font-size:16px; font-weight:700; text-decoration:none; border-radius:10px;">View My Review Page</a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Divider -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;">
+              <tr>
+                <td style="border-top:1px solid #e5e7eb; padding-top:24px;">
+                  <p style="margin:0 0 16px; font-size:15px; font-weight:700; color:#1f2937; text-align:center;">3 easy ways to share it:</p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Three new buttons -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;">
+              <tr>
+                <td align="center" style="padding:0 0 12px;">
+                  <a href="{{REVIEW_URL}}/email" style="display:block; background:#1a2332; color:#ffffff; padding:14px 20px; font-size:15px; font-weight:700; text-decoration:none; border-radius:10px; text-align:center;">📧 Get Sample Email</a>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:0 0 12px;">
+                  <a href="{{REVIEW_URL}}/text" style="display:block; background:#1a2332; color:#ffffff; padding:14px 20px; font-size:15px; font-weight:700; text-decoration:none; border-radius:10px; text-align:center;">💬 Get Sample Text Message</a>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:0 0 12px;">
+                  <a href="{{REVIEW_URL}}/qr" style="display:block; background:#1a2332; color:#ffffff; padding:14px 20px; font-size:15px; font-weight:700; text-decoration:none; border-radius:10px; text-align:center;">🖨️ Print Your QR Card</a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:32px 0 8px; font-size:14px; color:#6b7280;">
+              Questions? Just reply to this email. We're here to help.
+            </p>
+            <p style="margin:0; font-size:14px; color:#6b7280;">
+              — The All5Starz Team
+            </p>
+
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code — {{BUSINESS_NAME}}</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --navy: #1a2332;
+    --amber: #F59E0B;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .header {
+    background: var(--navy);
+    color: white;
+    padding: 24px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+  }
+  .header h1 {
+    margin: 0;
+    color: var(--amber);
+    font-size: 22px;
+  }
+  .header p {
+    margin: 6px 0 0;
+    color: #d1d5db;
+    font-size: 14px;
+  }
+  .card {
+    background: var(--card);
+    padding: 28px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .printable {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .business-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 4px;
+  }
+  .tagline {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin: 0 0 20px;
+  }
+  .qr-img {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+    display: block;
+  }
+  .scan-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 16px 0 4px;
+  }
+  .scan-helper {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .button-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .btn {
+    flex: 1;
+    border: none;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: var(--navy);
+  }
+  .btn-primary:hover { background: #d97706; }
+  .btn-secondary {
+    background: var(--navy);
+    color: white;
+  }
+  .btn-secondary:hover { background: #0f1825; }
+  .tip {
+    background: #fef3c7;
+    border-left: 4px solid var(--amber);
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-top: 20px;
+    color: #78350f;
+  }
+  .back {
+    display: inline-block;
+    margin-top: 24px;
+    color: var(--navy);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .back:hover { text-decoration: underline; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .container { max-width: 100%; }
+    .header, .button-row, .tip, .back { display: none !important; }
+    .card { box-shadow: none; padding: 0; border-radius: 0; }
+    .printable { border: none; padding: 40px; page-break-inside: avoid; }
+    .qr-img { width: 360px; height: 360px; }
+    .business-name { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🖨️ Your QR Code</h1>
+    <p>Print this for your counter, vehicle, or business card</p>
+  </div>
+  <div class="card">
+
+    <div class="printable" id="printable">
+      <h2 class="business-name">{{BUSINESS_NAME}}</h2>
+      <p class="tagline">How'd we do?</p>
+      <img class="qr-img" id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={{REVIEW_URL_ENCODED}}&margin=10" alt="Scan to leave a review">
+      <p class="scan-text">Scan to leave a review</p>
+      <p class="scan-helper">Open your phone's camera and point it at the code</p>
+    </div>
+
+    <div class="button-row">
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+      <a class="btn btn-secondary" href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{REVIEW_URL_ENCODED}}&margin=10&format=png" download="{{SLUG}}-qr-code.png">⬇️ Download PNG</a>
+    </div>
+
+    <div class="tip">
+      <strong>Tip:</strong> A 4x6 print on cardstock works great on a counter. Put one on your dashboard too — easy to hand to customers after a job.
+    </div>
+
+    <a href="/r/{{SLUG}}/" class="back">← Back to your review page</a>
+  </div>
+</div>
+</body>
+</html>
