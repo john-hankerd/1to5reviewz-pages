@@ -1,161 +1,222 @@
-// =============================================================
-// netlify/functions/create-review-page.js
-//
-// Replaces your existing create-review-page.js entirely.
-// This version:
-//   - Auto-generates the slug from the business name
-//   - Auto-builds the Google review URL from the Place ID
-//   - Creates 4 files per signup (review, email, text, qr)
-//   - Sends the welcome email with 3 new buttons
-//
-// Required env vars (all should already be set in Netlify):
-//   GITHUB_TOKEN, GITHUB_REPO, RESEND_API_KEY
-// =============================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate your experience at {{BUSINESS_NAME}}</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --navy: #1a2332;
+    --amber: #F59E0B;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 48px 32px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .business-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .subhead {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
+  }
+  .helper {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin: 0 0 28px;
+  }
+  .stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 32px;
+  }
+  .star {
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    color: #d1d5db;
+  }
+  .star:hover, .star.hover {
+    transform: scale(1.1);
+    color: var(--amber);
+  }
+  .star.selected {
+    color: var(--amber);
+  }
+  .footer {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 24px;
+  }
+  /* Private feedback form */
+  .feedback-form {
+    display: none;
+    text-align: left;
+  }
+  .feedback-form.active { display: block; }
+  .feedback-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 12px 0 6px;
+  }
+  .feedback-form input,
+  .feedback-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+  }
+  .feedback-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--amber);
+    color: var(--navy);
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  .submit-btn:hover { background: #d97706; }
+  .thanks {
+    display: none;
+    padding: 24px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    color: #166534;
+  }
+  .thanks.active { display: block; }
+  @media (max-width: 480px) {
+    .business-name { font-size: 26px; }
+    .star { width: 44px; height: 44px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="rating-view">
+    <h1 class="business-name">{{BUSINESS_NAME}}</h1>
+    <h2 class="subhead">How'd we do?</h2>
+    <p class="helper">Tap a star to rate your experience</p>
+    <div class="stars" id="stars">
+      <svg class="star" data-value="1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <div class="feedback-form" id="feedback-form">
+      <p class="helper" style="margin-bottom: 0;">We're sorry we didn't hit the mark. Tell us what happened so we can make it right.</p>
+      <label for="fb-name">Your name</label>
+      <input type="text" id="fb-name" required>
+      <label for="fb-email">Your email</label>
+      <input type="email" id="fb-email" required>
+      <label for="fb-message">What happened?</label>
+      <textarea id="fb-message" required></textarea>
+      <button class="submit-btn" onclick="submitFeedback()">Send Private Feedback</button>
+    </div>
+    <div class="thanks" id="thanks">
+      <strong>Thanks!</strong> Your feedback has been sent to {{BUSINESS_NAME}}.
+    </div>
+  </div>
+  <div class="footer">Powered by 1to5reviewz</div>
+</div>
 
-const fs = require('fs');
-const path = require('path');
+<script>
+  const GOOGLE_REVIEW_URL = "{{GOOGLE_REVIEW_URL}}";
+  const BUSINESS_EMAIL = "{{BUSINESS_EMAIL}}";
+  const BUSINESS_NAME = "{{BUSINESS_NAME}}";
+  const SLUG = "{{SLUG}}";
 
-// Load all 5 templates once at cold start
-const reviewTemplate       = fs.readFileSync(path.join(__dirname, '../../review-page-template.html'), 'utf8');
-const emailTemplate        = fs.readFileSync(path.join(__dirname, '../../email.html'), 'utf8');
-const textTemplate         = fs.readFileSync(path.join(__dirname, '../../text.html'), 'utf8');
-const qrTemplate           = fs.readFileSync(path.join(__dirname, '../../qr.html'), 'utf8');
-const welcomeEmailTemplate = fs.readFileSync(path.join(__dirname, '../../welcome-email.html'), 'utf8');
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star => {
+    star.addEventListener('mouseenter', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.classList.toggle('hover', i < val));
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach(s => s.classList.remove('hover'));
+    });
+    star.addEventListener('click', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.classList.toggle('selected', i < val));
+      handleRating(val);
+    });
+  });
 
-exports.handler = async (event) => {
-  try {
-    // The webhook hands off these fields after a successful Stripe payment
-    const data = JSON.parse(event.body);
-    const {
-      business_name,
-      owner_name,
-      email,
-      place_id,
-      formatted_address
-    } = data;
-
-    if (!business_name || !email || !place_id) {
-      return { statusCode: 400, body: 'Missing required fields' };
+  function handleRating(rating) {
+    if (rating === 5) {
+      window.location.href = GOOGLE_REVIEW_URL;
+    } else {
+      document.getElementById('feedback-form').classList.add('active');
+      window.selectedRating = rating;
     }
-
-    // 1. Generate a unique slug from the business name
-    const baseSlug = slugify(business_name);
-    const slug = await generateUniqueSlug(baseSlug);
-
-    // 2. Build URLs
-    const reviewUrl = `https://1to5reviewz.com/r/${slug}`;
-    const googleReviewUrl = `https://search.google.com/local/writereview?placeid=${place_id}`;
-
-    // 3. Build the variables used in every template
-    const ownerFirstName = (owner_name || '').split(' ')[0] || 'there';
-    const vars = {
-      BUSINESS_NAME: business_name,
-      SLUG: slug,
-      REVIEW_URL: reviewUrl,
-      REVIEW_URL_ENCODED: encodeURIComponent(reviewUrl),
-      GOOGLE_REVIEW_URL: googleReviewUrl,
-      BUSINESS_EMAIL: email,
-      OWNER_FIRST_NAME: ownerFirstName
-    };
-
-    // 4. Write all 4 customer-facing files to GitHub
-    await createGitHubFile(`r/${slug}/index.html`,       fillTemplate(reviewTemplate, vars));
-    await createGitHubFile(`r/${slug}/email/index.html`, fillTemplate(emailTemplate, vars));
-    await createGitHubFile(`r/${slug}/text/index.html`,  fillTemplate(textTemplate, vars));
-    await createGitHubFile(`r/${slug}/qr/index.html`,    fillTemplate(qrTemplate, vars));
-
-    // 5. Send the welcome email
-    await sendWelcomeEmail(vars);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, slug, reviewUrl })
-    };
-  } catch (err) {
-    console.error('create-review-page error:', err);
-    return { statusCode: 500, body: err.message };
   }
-};
 
-// ----------------------------------------------------------------
-// Helpers
-// ----------------------------------------------------------------
-
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .replace(/['']/g, '')      // strip apostrophes ("Joe's" -> "Joes")
-    .replace(/&/g, 'and')      // "&" -> "and"
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')   // trim leading/trailing dashes
-    .substring(0, 50);
-}
-
-async function generateUniqueSlug(baseSlug) {
-  let slug = baseSlug;
-  let counter = 2;
-  while (await slugExists(slug)) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-    if (counter > 100) throw new Error('Too many slug collisions');
+  function submitFeedback() {
+    const name = document.getElementById('fb-name').value;
+    const email = document.getElementById('fb-email').value;
+    const message = document.getElementById('fb-message').value;
+    if (!name || !email || !message) {
+      alert('Please fill in all fields');
+      return;
+    }
+    fetch('/.netlify/functions/private-feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        slug: SLUG,
+        businessName: BUSINESS_NAME,
+        businessEmail: BUSINESS_EMAIL,
+        rating: window.selectedRating,
+        name, email, message
+      })
+    }).then(() => {
+      document.getElementById('feedback-form').classList.remove('active');
+      document.getElementById('thanks').classList.add('active');
+    }).catch(() => {
+      alert('Something went wrong. Please try again.');
+    });
   }
-  return slug;
-}
-
-async function slugExists(slug) {
-  const url = `https://api.github.com/repos/${process.env.GITHUB_REPO}/contents/r/${slug}/index.html`;
-  const res = await fetch(url, {
-    headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}` }
-  });
-  return res.status === 200;
-}
-
-function fillTemplate(template, vars) {
-  let out = template;
-  for (const [key, val] of Object.entries(vars)) {
-    out = out.split(`{{${key}}}`).join(val);
-  }
-  return out;
-}
-
-async function createGitHubFile(filePath, content) {
-  const url = `https://api.github.com/repos/${process.env.GITHUB_REPO}/contents/${filePath}`;
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      message: `Add ${filePath}`,
-      content: Buffer.from(content).toString('base64')
-    })
-  });
-  // 422 = file already exists (treat as OK, see existing webhook behavior)
-  if (!res.ok && res.status !== 422) {
-    const err = await res.text();
-    throw new Error(`GitHub error for ${filePath}: ${err}`);
-  }
-}
-
-async function sendWelcomeEmail(vars) {
-  const html = fillTemplate(welcomeEmailTemplate, vars);
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      from: 'All5Starz <info@all5starz.com>',
-      to: vars.BUSINESS_EMAIL,
-      subject: "You're all set! Your All5Starz review page is live",
-      html
-    })
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Resend error: ${err}`);
-  }
-}
+</script>
+</body>
+</html>
