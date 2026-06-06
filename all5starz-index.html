@@ -150,6 +150,21 @@
     .form-submit { width: 100%; background: var(--color-ink); color: #fff; border: none; padding: 18px; border-radius: 12px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 8px; font-family: var(--font-body); }
     .form-submit:hover { background: var(--color-gold-deep); transform: translateY(-1px); }
     .form-fineprint { font-size: 0.82rem; color: var(--color-muted); text-align: center; margin-top: 16px; }
+
+    /* NEW: Business confirmation box and error message */
+    .business-confirmed { display: none; background: var(--color-gold-soft); border: 1px solid var(--color-gold); border-radius: 12px; padding: 12px 16px; margin-top: 10px; font-size: 0.9rem; color: var(--color-ink); line-height: 1.4; }
+    .business-confirmed.shown { display: block; }
+    .business-confirmed strong { color: var(--color-gold-deep); margin-right: 4px; }
+    .form-error { display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; }
+    .form-error.shown { display: block; }
+
+    /* Google Places autocomplete dropdown styling */
+    .pac-container { border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--color-line); margin-top: 4px; font-family: var(--font-body); }
+    .pac-item { padding: 12px 16px; cursor: pointer; border-top: 1px solid var(--color-line); font-size: 0.95rem; }
+    .pac-item:hover { background: var(--color-gold-soft); }
+    .pac-item:first-child { border-top: none; }
+    .pac-item-query { font-size: 0.95rem; color: var(--color-ink); }
+
     footer { background: var(--color-bg-dark); color: rgba(255, 255, 255, 0.6); padding: 60px 0 40px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
     .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
     .footer-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: #fff; }
@@ -422,7 +437,7 @@
       </details>
       <details class="faq-item">
         <summary class="faq-question">How long does setup take?</summary>
-        <div class="faq-answer">About 60 seconds. Fill in your business name and Google review URL, hit submit, and your review page is live. We email you the link plus a printable QR card you can put on your counter or hand to customers.</div>
+        <div class="faq-answer">About 60 seconds. Pick your business from the dropdown, add your email, hit submit, and your review page is live. We email you the link plus a printable QR card you can put on your counter or hand to customers.</div>
       </details>
       <details class="faq-item">
         <summary class="faq-question">What if I want to cancel?</summary>
@@ -470,9 +485,15 @@
           </label>
         </div>
 
+        <div class="form-error" id="form-error"></div>
+
         <div class="form-group">
           <label>Business Name <span class="required">*</span></label>
-          <input type="text" name="business_name" required placeholder="Joe's Auto Repair" />
+          <input type="text" id="business-name-input" autocomplete="off" required placeholder="Start typing your business name..." />
+          <div class="hint">Pick your business from the dropdown. Don't see it? You'll need a <a href="https://www.google.com/business/" target="_blank" style="color:var(--color-gold-deep);">Google Business Profile</a> first.</div>
+          <div id="business-confirmed" class="business-confirmed">
+            <strong>✓ Found:</strong> <span id="confirmed-name"></span> — <span id="confirmed-address"></span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -482,7 +503,7 @@
 
         <div class="form-group">
           <label>Email for Feedback <span class="required">*</span></label>
-          <input type="email" name="feedback_email" required placeholder="joe@joesauto.com" />
+          <input type="email" name="email" required placeholder="joe@joesauto.com" />
           <div class="hint">This is where bad reviews will be sent privately.</div>
         </div>
 
@@ -491,18 +512,10 @@
           <input type="tel" name="phone" placeholder="(555) 555-5555" />
         </div>
 
-        <div class="form-group">
-          <label>Your Google Review Link <span class="required">*</span></label>
-          <input type="url" name="google_review_url" required placeholder="https://g.page/r/..." />
-          <div class="hint">The direct link to leave you a Google review. <a href="https://support.google.com/business/answer/7035772" target="_blank" style="color:var(--color-gold-deep);">How to find this →</a></div>
-        </div>
-
-        <div class="form-group">
-          <label>Pick Your URL (slug) <span class="required">*</span></label>
-          <input type="text" name="slug" required placeholder="joes-auto" pattern="[a-z0-9-]+" />
-          <div class="hint">Your page will be at 1to5reviewz.com/r/<strong>your-slug</strong></div>
-        </div>
-
+        <!-- Hidden fields filled in by Google Places autocomplete -->
+        <input type="hidden" name="business_name" id="business-name-hidden" />
+        <input type="hidden" name="place_id" id="place-id" />
+        <input type="hidden" name="formatted_address" id="formatted-address" />
         <input type="hidden" name="submitted_at" id="submitted_at" />
 
         <button type="submit" class="form-submit" id="submit-btn">Continue to Secure Payment →</button>
@@ -531,8 +544,62 @@
 <script>
   document.getElementById('submitted_at').value = new Date().toISOString();
 
+  // Google Places autocomplete
+  function initAutocomplete() {
+    const input = document.getElementById('business-name-input');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['establishment'],
+      fields: ['place_id', 'name', 'formatted_address']
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (!place.place_id) {
+        showFormError('Please select your business from the dropdown.');
+        return;
+      }
+      document.getElementById('place-id').value = place.place_id;
+      document.getElementById('business-name-hidden').value = place.name;
+      document.getElementById('formatted-address').value = place.formatted_address || '';
+
+      document.getElementById('confirmed-name').textContent = place.name;
+      document.getElementById('confirmed-address').textContent = place.formatted_address || '';
+      document.getElementById('business-confirmed').classList.add('shown');
+      hideFormError();
+    });
+
+    // If user starts editing again, clear the captured data
+    input.addEventListener('input', () => {
+      if (document.getElementById('place-id').value) {
+        document.getElementById('place-id').value = '';
+        document.getElementById('business-name-hidden').value = '';
+        document.getElementById('formatted-address').value = '';
+        document.getElementById('business-confirmed').classList.remove('shown');
+      }
+    });
+  }
+
+  function showFormError(msg) {
+    const el = document.getElementById('form-error');
+    el.textContent = msg;
+    el.classList.add('shown');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function hideFormError() {
+    document.getElementById('form-error').classList.remove('shown');
+  }
+
   async function handleSignup(event) {
     event.preventDefault();
+    hideFormError();
+
+    // Make sure a business was picked from the autocomplete dropdown
+    const placeId = document.getElementById('place-id').value;
+    if (!placeId) {
+      showFormError('Please pick your business from the dropdown so we can find your Google review link.');
+      return;
+    }
+
     const form = event.target;
     const submitBtn = document.getElementById('submit-btn');
     const originalText = submitBtn.textContent;
@@ -546,8 +613,6 @@
     for (const [key, value] of formData.entries()) {
       payload[key] = value;
     }
-
-    payload.slug = payload.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
 
     try {
       const response = await fetch('https://1to5reviewz.com/.netlify/functions/create-checkout-session', {
@@ -571,6 +636,9 @@
     }
   }
 </script>
+
+<!-- Google Maps Places API — loads autocomplete -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmoOKhnBaE9OTnC18U4PxTNuM4-OezUtU&libraries=places&callback=initAutocomplete" async defer></script>
 
 </body>
 </html>
