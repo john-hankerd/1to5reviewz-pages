@@ -66,7 +66,9 @@ exports.handler = async (event) => {
     }
 
     const baseSlug = slugify(business_name);
-    const slug = await generateUniqueSlug(baseSlug);
+    // Find the right slug: reuse the existing one if this is the same
+    // business (same place_id), otherwise pick a fresh -2 / -3 slug.
+    const slug = await resolveSlug(baseSlug, place_id);
 
     const reviewUrl = `https://1to5reviewz.com/r/${slug}`;
     const googleReviewUrl = `https://search.google.com/local/writereview?placeid=${place_id}`;
@@ -80,12 +82,17 @@ exports.handler = async (event) => {
       GOOGLE_REVIEW_URL: googleReviewUrl,
       BUSINESS_EMAIL: email,
       OWNER_FIRST_NAME: ownerFirstName,
+      PLACE_ID: place_id,
     };
 
-    await createGitHubFile(`r/${slug}/index.html`,       fillTemplate(reviewTemplate, vars));
-    await createGitHubFile(`r/${slug}/email/index.html`, fillTemplate(emailTemplate, vars));
-    await createGitHubFile(`r/${slug}/text/index.html`,  fillTemplate(textTemplate, vars));
-    await createGitHubFile(`r/${slug}/qr/index.html`,    fillTemplate(qrTemplate, vars));
+    // Each page carries a hidden marker with its place_id so we can
+    // recognize the same business on a later signup or resend.
+    const placeMarker = `\n<!-- all5starz-place-id: ${place_id} -->\n`;
+
+    await putGitHubFile(`r/${slug}/index.html`,       fillTemplate(reviewTemplate, vars) + placeMarker);
+    await putGitHubFile(`r/${slug}/email/index.html`, fillTemplate(emailTemplate, vars));
+    await putGitHubFile(`r/${slug}/text/index.html`,  fillTemplate(textTemplate, vars));
+    await putGitHubFile(`r/${slug}/qr/index.html`,    fillTemplate(qrTemplate, vars));
 
     await sendWelcomeEmail(vars);
 
@@ -113,23 +120,53 @@ function slugify(text) {
     .substring(0, 50);
 }
 
-async function generateUniqueSlug(baseSlug) {
+// Decide which slug to use.
+// - If baseSlug is free, use it.
+// - If baseSlug is taken by the SAME business (matching place_id), reuse it
+//   so we update that page in place instead of making a duplicate.
+// - Otherwise step through baseSlug-2, baseSlug-3, ... applying the same
+//   rule, so a genuinely different business gets its own page.
+async function resolveSlug(baseSlug, placeId) {
   let slug = baseSlug;
   let counter = 2;
-  while (await slugExists(slug)) {
+  while (true) {
+    const existing = await getPageInfo(slug);
+    if (!existing.exists) {
+      return slug; // free — use it
+    }
+    if (existing.placeId && existing.placeId === placeId) {
+      return slug; // same business — update this page in place
+    }
+    // taken by a different business — try the next numbered slug
     slug = `${baseSlug}-${counter}`;
     counter++;
     if (counter > 100) throw new Error("Too many slug collisions");
   }
-  return slug;
 }
 
-async function slugExists(slug) {
+// Look up an existing review page. Returns whether it exists and, if so,
+// the place_id stored in its hidden marker (so we can match the business).
+async function getPageInfo(slug) {
   const url = `https://api.github.com/repos/${process.env.GITHUB_REPO}/contents/r/${slug}/index.html`;
   const res = await fetch(url, {
-    headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` },
+    headers: {
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+    },
   });
-  return res.status === 200;
+  if (res.status !== 200) {
+    return { exists: false };
+  }
+  const json = await res.json();
+  let placeId = null;
+  try {
+    const content = Buffer.from(json.content, "base64").toString("utf8");
+    const match = content.match(/all5starz-place-id:\s*([^\s]+)\s*-->/);
+    if (match) placeId = match[1];
+  } catch (e) {
+    // if we can't read it, treat as no marker
+  }
+  return { exists: true, placeId, sha: json.sha };
 }
 
 function fillTemplate(template, vars) {
@@ -140,8 +177,30 @@ function fillTemplate(template, vars) {
   return out;
 }
 
-async function createGitHubFile(filePath, content) {
+// Create OR update a file on GitHub. If the file already exists, GitHub
+// requires its current sha to overwrite it, so we look that up first.
+async function putGitHubFile(filePath, content) {
   const url = `https://api.github.com/repos/${process.env.GITHUB_REPO}/contents/${filePath}`;
+
+  // Check whether the file already exists, to get its sha.
+  let sha = null;
+  const head = await fetch(url, {
+    headers: {
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+    },
+  });
+  if (head.status === 200) {
+    const headJson = await head.json();
+    sha = headJson.sha;
+  }
+
+  const body = {
+    message: sha ? `Update ${filePath}` : `Add ${filePath}`,
+    content: Buffer.from(content).toString("base64"),
+  };
+  if (sha) body.sha = sha; // required to overwrite an existing file
+
   const res = await fetch(url, {
     method: "PUT",
     headers: {
@@ -149,12 +208,9 @@ async function createGitHubFile(filePath, content) {
       Accept: "application/vnd.github.v3+json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      message: `Add ${filePath}`,
-      content: Buffer.from(content).toString("base64"),
-    }),
+    body: JSON.stringify(body),
   });
-  if (!res.ok && res.status !== 422) {
+  if (!res.ok) {
     const err = await res.text();
     throw new Error(`GitHub error for ${filePath}: ${err}`);
   }
