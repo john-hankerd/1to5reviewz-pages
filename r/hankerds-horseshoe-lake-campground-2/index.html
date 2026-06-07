@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate your experience at Hankerd's Horseshoe Lake Campground</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --navy: #1a2332;
+    --amber: #F59E0B;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 48px 32px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .business-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .subhead {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
+  }
+  .helper {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin: 0 0 28px;
+  }
+  .stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 32px;
+  }
+  .star {
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    color: #d1d5db;
+  }
+  .star:hover, .star.hover {
+    transform: scale(1.1);
+    color: var(--amber);
+  }
+  .star.selected {
+    color: var(--amber);
+  }
+  .footer {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 24px;
+  }
+  /* Private feedback form */
+  .feedback-form {
+    display: none;
+    text-align: left;
+  }
+  .feedback-form.active { display: block; }
+  .feedback-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 12px 0 6px;
+  }
+  .feedback-form input,
+  .feedback-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+  }
+  .feedback-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--amber);
+    color: var(--navy);
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  .submit-btn:hover { background: #d97706; }
+  .thanks {
+    display: none;
+    padding: 24px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    color: #166534;
+  }
+  .thanks.active { display: block; }
+  @media (max-width: 480px) {
+    .business-name { font-size: 26px; }
+    .star { width: 44px; height: 44px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="rating-view">
+    <h1 class="business-name">Hankerd's Horseshoe Lake Campground</h1>
+    <h2 class="subhead">How'd we do?</h2>
+    <p class="helper">Tap a star to rate your experience</p>
+    <div class="stars" id="stars">
+      <svg class="star" data-value="1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <svg class="star" data-value="5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <div class="feedback-form" id="feedback-form">
+      <p class="helper" style="margin-bottom: 0;">Thanks for the feedback &mdash; we'd love to hear more.</p>
+      <label for="fb-name">Your name</label>
+      <input type="text" id="fb-name" required>
+      <label for="fb-email">Your email</label>
+      <input type="email" id="fb-email" required>
+      <label for="fb-message">Tell us about your experience</label>
+      <textarea id="fb-message" required></textarea>
+      <button class="submit-btn" onclick="submitFeedback()">Send Private Feedback</button>
+    </div>
+    <div class="thanks" id="thanks">
+      <strong>Thanks!</strong> Your feedback has been sent to Hankerd's Horseshoe Lake Campground.
+    </div>
+  </div>
+  <div class="footer">Powered by 1to5reviewz</div>
+</div>
+
+<script>
+  const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJJz9_niEJIIgRjQ4o19N78bY";
+  const BUSINESS_EMAIL = "hankerdcampgrounds@gmail.com";
+  const BUSINESS_NAME = "Hankerd's Horseshoe Lake Campground";
+  const SLUG = "hankerds-horseshoe-lake-campground-2";
+
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star => {
+    star.addEventListener('mouseenter', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.classList.toggle('hover', i < val));
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach(s => s.classList.remove('hover'));
+    });
+    star.addEventListener('click', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.classList.toggle('selected', i < val));
+      handleRating(val);
+    });
+  });
+
+  function handleRating(rating) {
+    if (rating === 5) {
+      window.location.href = GOOGLE_REVIEW_URL;
+    } else {
+      document.getElementById('feedback-form').classList.add('active');
+      window.selectedRating = rating;
+    }
+  }
+
+  function submitFeedback() {
+    const name = document.getElementById('fb-name').value;
+    const email = document.getElementById('fb-email').value;
+    const message = document.getElementById('fb-message').value;
+    if (!name || !email || !message) {
+      alert('Please fill in all fields');
+      return;
+    }
+    fetch('/.netlify/functions/private-feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        slug: SLUG,
+        businessName: BUSINESS_NAME,
+        businessEmail: BUSINESS_EMAIL,
+        rating: window.selectedRating,
+        name, email, message
+      })
+    }).then(() => {
+      document.getElementById('feedback-form').classList.remove('active');
+      document.getElementById('thanks').classList.add('active');
+    }).catch(() => {
+      alert('Something went wrong. Please try again.');
+    });
+  }
+</script>
+</body>
+</html>
