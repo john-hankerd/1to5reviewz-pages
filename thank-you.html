@@ -57,8 +57,12 @@
       <a href="#" id="review-link" class="link">Loading...</a>
     </div>
 
+    <p id="setup-status" style="color: var(--color-ink-soft); font-size: 0.92rem; margin-bottom: 12px; position: relative; z-index: 1;">
+      Setting up your page — ready in about <span id="countdown">40</span> seconds...
+    </p>
+
     <div class="actions">
-      <a href="#" id="view-page-btn" class="btn btn-primary" target="_blank">View My Page →</a>
+      <a href="#" id="view-page-btn" class="btn btn-primary" target="_blank" style="opacity: 0.5; pointer-events: none;">View My Page →</a>
       <button id="copy-btn" class="btn btn-secondary">📋 Copy Link</button>
     </div>
 
@@ -95,8 +99,29 @@
           setTimeout(() => btn.textContent = original, 2000);
         });
       });
+
+      // The page takes roughly 30-60 seconds to build and deploy after
+      // payment. Rather than let people click through to a 404, count down
+      // before enabling the button.
+      let secondsLeft = 40;
+      const countdownEl = document.getElementById('countdown');
+      const statusEl = document.getElementById('setup-status');
+      const viewBtn = document.getElementById('view-page-btn');
+
+      const timer = setInterval(() => {
+        secondsLeft -= 1;
+        if (secondsLeft <= 0) {
+          clearInterval(timer);
+          statusEl.textContent = 'Your page is ready!';
+          viewBtn.style.opacity = '1';
+          viewBtn.style.pointerEvents = 'auto';
+        } else {
+          countdownEl.textContent = secondsLeft;
+        }
+      }, 1000);
     } else {
       document.getElementById('review-link').textContent = 'Check your email for your link';
+      document.getElementById('setup-status').style.display = 'none';
     }
   </script>
 </body>

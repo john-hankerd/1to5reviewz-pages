@@ -110,6 +110,7 @@ exports.handler = async (event) => {
     "metadata[formatted_address]": formatted_address || "",
     "metadata[slug]": slug,
     "metadata[plan]": plan || "monthly",
+    "subscription_data[trial_period_days]": "30",
     "subscription_data[metadata][business_name]": business_name,
     "subscription_data[metadata][slug]": slug,
     "subscription_data[metadata][email]": email,
