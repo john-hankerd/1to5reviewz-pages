@@ -1,0 +1,96 @@
+functionsDirectory = "C:\\Users\\john\\AppData\\Local\\Temp\\claude\\C--Users-john-OneDrive-Desktop-all5starz\\c63a1a7c-f79f-49c9-95e2-9d37a6855dc6\\scratchpad\\1to5reviewz-pages\\netlify\\functions"
+functionsDirectoryOrigin = "config-v1"
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[build]
+publish = "C:\\Users\\john\\AppData\\Local\\Temp\\claude\\C--Users-john-OneDrive-Desktop-all5starz\\c63a1a7c-f79f-49c9-95e2-9d37a6855dc6\\scratchpad\\1to5reviewz-pages"
+publishOrigin = "config"
+functions = "C:\\Users\\john\\AppData\\Local\\Temp\\claude\\C--Users-john-OneDrive-Desktop-all5starz\\c63a1a7c-f79f-49c9-95e2-9d37a6855dc6\\scratchpad\\1to5reviewz-pages\\netlify\\functions"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[functions]
+
+[functions."*"]
+included_files = ["*.html"]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+
+[[redirects]]
+from = "https://all5starz.com/"
+to = "/all5starz-index.html"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://www.all5starz.com/"
+to = "/all5starz-index.html"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://all5starz.com/thank-you"
+to = "/thank-you.html"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://www.all5starz.com/thank-you"
+to = "/thank-you.html"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/r/*"
+to = "/r/:splat/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

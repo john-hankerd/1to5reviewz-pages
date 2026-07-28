@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR Code — Hankerd’s Horseshoe Lake Campground</title>
+<title>QR Code — Hankerd's Horseshoe Lake Campground</title>
 <meta name="robots" content="noindex">
 <style>
   :root {
@@ -122,6 +122,46 @@
     cursor: pointer;
   }
   .link-btn:hover { background: #0f1825; }
+
+  /* Download / print modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 26px 24px 22px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .modal-close {
+    position: absolute;
+    top: 8px; right: 14px;
+    background: none; border: none;
+    font-size: 28px; line-height: 1;
+    color: #9ca3af; cursor: pointer;
+  }
+  .modal-title { margin: 0 0 2px; color: var(--navy); font-size: 20px; }
+  .modal-sub { margin: 0 0 16px; color: var(--text-muted); font-size: 14px; }
+  .modal-qr {
+    width: 220px; height: 220px;
+    display: block; margin: 0 auto 18px;
+    border: 1px solid var(--border); border-radius: 10px;
+  }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns .print-btn, .modal-btns .link-btn { margin: 0; min-width: 0; flex: 1; }
+  .modal-note { font-size: 12.5px; color: var(--text-muted); margin: 12px 0 0; min-height: 16px; }
 
   .tip {
     background: #fef3c7;
@@ -273,7 +313,7 @@
     </div>
 
     <div class="secondary-row">
-      <a class="link-btn" href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=10&format=png" download="hankerds-horseshoe-lake-campground-qr-code.png">⬇️ Download QR image (PNG)</a>
+      <button class="link-btn" onclick="openQrModal()">⬇️ Download or print the plain QR code</button>
     </div>
 
     <div class="tip">
@@ -284,12 +324,64 @@
   </div>
 </div>
 
+<!-- Download / print the plain QR code -->
+<div id="qr-modal" class="modal-overlay" onclick="if(event.target===this)closeQrModal()">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeQrModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title">Your QR code</h3>
+    <p class="modal-sub">Hankerd's Horseshoe Lake Campground</p>
+    <img class="modal-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=10&format=png" alt="Your review QR code">
+    <div class="modal-btns">
+      <button class="print-btn" onclick="downloadQr()">⬇️ Download</button>
+      <button class="link-btn" onclick="printQrRaw()">🖨️ Print</button>
+    </div>
+    <p id="qr-dl-note" class="modal-note"></p>
+  </div>
+</div>
+
 <!-- What actually gets sent to the printer (one size at a time) -->
 <div id="print-area"></div>
 
 <script>
   var QR_SRC = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=8";
-  var BUSINESS_NAME = "Hankerd’s Horseshoe Lake Campground";
+  var QR_PNG_SRC = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=10&format=png";
+  var BUSINESS_NAME = "Hankerd's Horseshoe Lake Campground";
+  var SLUG = "hankerds-horseshoe-lake-campground";
+
+  // ---- Download / print the plain QR code ----
+  function openQrModal() {
+    document.getElementById('qr-dl-note').textContent = '';
+    document.getElementById('qr-modal').classList.add('open');
+  }
+  function closeQrModal() {
+    document.getElementById('qr-modal').classList.remove('open');
+  }
+  async function downloadQr() {
+    var note = document.getElementById('qr-dl-note');
+    note.textContent = 'Preparing download…';
+    try {
+      var res = await fetch(QR_PNG_SRC, { mode: 'cors' });
+      if (!res.ok) throw new Error('bad status ' + res.status);
+      var blob = await res.blob();
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (SLUG || 'review') + '-qr-code.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+      note.textContent = 'Saved to your downloads.';
+    } catch (e) {
+      // Fallback: open the image so the user can long-press / right-click to save.
+      note.textContent = 'Opening the image — press and hold (or right-click) it to save.';
+      window.open(QR_PNG_SRC, '_blank');
+    }
+  }
+  function printQrRaw() {
+    closeQrModal();
+    printSize('letter'); // a clean full-page QR sign
+  }
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
