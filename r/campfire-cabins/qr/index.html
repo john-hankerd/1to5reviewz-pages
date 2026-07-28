@@ -9,9 +9,10 @@
   :root {
     --navy: #1a2332;
     --amber: #F59E0B;
+    --amber-dark: #d97706;
     --text: #1f2937;
     --text-muted: #6b7280;
-    --bg: #f9fafb;
+    --bg: #f3f4f6;
     --card: #ffffff;
     --border: #e5e7eb;
   }
@@ -24,107 +25,117 @@
     padding: 20px;
     min-height: 100vh;
   }
-  .container {
-    max-width: 640px;
-    margin: 0 auto;
-  }
+  .container { max-width: 900px; margin: 0 auto; }
+
   .header {
     background: var(--navy);
     color: white;
-    padding: 24px;
-    border-radius: 12px 12px 0 0;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
     text-align: center;
   }
-  .header h1 {
-    margin: 0;
-    color: var(--amber);
-    font-size: 22px;
-  }
-  .header p {
-    margin: 6px 0 0;
-    color: #d1d5db;
-    font-size: 14px;
-  }
+  .header h1 { margin: 0; color: var(--amber); font-size: 24px; }
+  .header p { margin: 8px 0 0; color: #d1d5db; font-size: 15px; }
+
   .card {
     background: var(--card);
-    padding: 28px;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 28px 24px 32px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
-  .printable {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .business-name {
-    font-size: 24px;
+
+  .step-label {
+    font-size: 13px;
     font-weight: 700;
-    color: var(--navy);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amber-dark);
     margin: 0 0 4px;
   }
-  .tagline {
-    font-size: 16px;
-    color: var(--text-muted);
-    margin: 0 0 20px;
+  .step-title { font-size: 20px; font-weight: 700; color: var(--navy); margin: 0 0 20px; }
+
+  /* Size option tiles */
+  .sizes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
   }
-  .qr-img {
-    width: 280px;
-    height: 280px;
-    margin: 0 auto;
-    display: block;
-  }
-  .scan-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--navy);
-    margin: 16px 0 4px;
-  }
-  .scan-helper {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin: 0;
-  }
-  .button-row {
+  @media (max-width: 680px) { .sizes { grid-template-columns: 1fr; } }
+
+  .size-tile {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px 20px;
+    text-align: center;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
     display: flex;
-    gap: 12px;
-    margin-top: 16px;
+    flex-direction: column;
+    align-items: center;
   }
-  .btn {
-    flex: 1;
+  .size-tile:hover { border-color: var(--amber); box-shadow: 0 6px 20px rgba(245,158,11,0.18); transform: translateY(-2px); }
+
+  .size-name { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0; }
+  .size-dims { font-size: 13px; color: var(--text-muted); margin: 2px 0 14px; }
+  .size-use { font-size: 12.5px; color: var(--text-muted); margin: 4px 0 16px; line-height: 1.4; min-height: 34px; }
+
+  /* Scaled preview window */
+  .preview-box {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .preview-scaler { transform-origin: center center; }
+
+  .print-btn {
+    margin-top: auto;
+    width: 100%;
+    background: var(--amber);
+    color: var(--navy);
     border: none;
-    padding: 14px;
+    padding: 13px;
     font-size: 15px;
     font-weight: 700;
     border-radius: 10px;
     cursor: pointer;
+  }
+  .print-btn:hover { background: var(--amber-dark); color: #fff; }
+
+  .secondary-row { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .link-btn {
+    flex: 1;
+    min-width: 160px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 10px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    cursor: pointer;
   }
-  .btn-primary {
-    background: var(--amber);
-    color: var(--navy);
-  }
-  .btn-primary:hover { background: #d97706; }
-  .btn-secondary {
-    background: var(--navy);
-    color: white;
-  }
-  .btn-secondary:hover { background: #0f1825; }
+  .link-btn:hover { background: #0f1825; }
+
   .tip {
     background: #fef3c7;
     border-left: 4px solid var(--amber);
     padding: 14px 16px;
     border-radius: 6px;
     font-size: 14px;
-    margin-top: 20px;
+    margin-top: 22px;
     color: #78350f;
+    line-height: 1.5;
   }
   .back {
     display: inline-block;
-    margin-top: 24px;
+    margin-top: 22px;
     color: var(--navy);
     text-decoration: none;
     font-weight: 600;
@@ -132,44 +143,214 @@
   }
   .back:hover { text-decoration: underline; }
 
+  /* ============ THE PRINTABLE CARD (shared by preview + print) ============ */
+  .print-card {
+    background: #fff;
+    color: var(--navy);
+    box-sizing: border-box;
+    text-align: center;
+    border: 3px solid var(--amber);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-card .pc-band {
+    width: 100%;
+    background: var(--navy);
+    color: var(--amber);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-card .pc-body {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .print-card .pc-sub { color: var(--amber-dark); font-weight: 700; }
+  .print-card .pc-qr { display: block; background: #fff; padding: 2%; }
+  .print-card .pc-scan { color: var(--navy); font-weight: 800; }
+  .print-card .pc-help { color: var(--text-muted); }
+  .print-card .pc-brand { color: #9ca3af; }
+
+  /* Full page — 8.5x11 */
+  .psize-letter { width: 7.5in; height: 9.8in; border-width: 5px; }
+  .psize-letter .pc-band { height: 1.5in; font-size: 34pt; padding: 0 0.4in; line-height: 1.15; }
+  .psize-letter .pc-sub { font-size: 22pt; margin: 0.35in 0 0.15in; }
+  .psize-letter .pc-qr { width: 4.4in; height: 4.4in; }
+  .psize-letter .pc-scan { font-size: 26pt; margin: 0.25in 0 0.08in; }
+  .psize-letter .pc-help { font-size: 14pt; }
+  .psize-letter .pc-brand { font-size: 11pt; margin: 0.3in 0 0.15in; }
+
+  /* Sign / photo frame — 5x7 */
+  .psize-5x7 { width: 5in; height: 7in; border-width: 4px; }
+  .psize-5x7 .pc-band { height: 1in; font-size: 20pt; padding: 0 0.25in; line-height: 1.1; }
+  .psize-5x7 .pc-sub { font-size: 14pt; margin: 0.22in 0 0.1in; }
+  .psize-5x7 .pc-qr { width: 3in; height: 3in; }
+  .psize-5x7 .pc-scan { font-size: 16pt; margin: 0.18in 0 0.05in; }
+  .psize-5x7 .pc-help { font-size: 10pt; }
+  .psize-5x7 .pc-brand { font-size: 8pt; margin: 0.18in 0 0.1in; }
+
+  /* Business card — 3.5x2 (landscape) */
+  .psize-card { width: 3.5in; height: 2in; border-width: 2px; border-radius: 9px; flex-direction: row; }
+  .psize-card .pc-band { display: none; }
+  .psize-card .pc-body { flex-direction: row; padding: 0.12in; gap: 0.12in; }
+  .psize-card .pc-qr { width: 1.55in; height: 1.55in; padding: 0; flex: none; }
+  .psize-card .pc-textwrap { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+  .psize-card .pc-name-inline { font-size: 10.5pt; font-weight: 800; color: var(--navy); line-height: 1.1; margin-bottom: 0.04in; }
+  .psize-card .pc-sub { font-size: 8pt; margin: 0 0 0.05in; }
+  .psize-card .pc-scan { font-size: 9pt; text-align: left; margin: 0.02in 0; }
+  .psize-card .pc-help { font-size: 6.5pt; text-align: left; }
+  .psize-card .pc-brand { font-size: 5.5pt; margin-top: 0.04in; }
+
+  /* Hidden until print */
+  #print-area { display: none; }
+
   @media print {
-    body { background: white; padding: 0; }
-    .container { max-width: 100%; }
-    .header, .button-row, .tip, .back { display: none !important; }
-    .card { box-shadow: none; padding: 0; border-radius: 0; }
-    .printable { border: none; padding: 40px; page-break-inside: avoid; }
-    .qr-img { width: 360px; height: 360px; }
-    .business-name { font-size: 30px; }
+    @page { size: letter portrait; margin: 0; }
+    html, body { background: #fff !important; margin: 0; padding: 0; }
+    body > *:not(#print-area) { display: none !important; }
+    #print-area {
+      display: flex !important;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 0.5in;
+      width: 8.5in;
+      height: 11in;
+    }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>🖨️ Your QR Code</h1>
-    <p>Print this for your counter, vehicle, or business card</p>
+    <h1>🖨️ Print Your Review QR Code</h1>
+    <p>Pick a size below. Customers scan it to leave you a review.</p>
   </div>
   <div class="card">
 
-    <div class="printable" id="printable">
-      <h2 class="business-name">Campfire Cabins</h2>
-      <p class="tagline">How'd we do?</p>
-      <img class="qr-img" id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fcampfire-cabins&margin=10" alt="Scan to leave a review">
-      <p class="scan-text">Scan to leave a review</p>
-      <p class="scan-helper">Open your phone's camera and point it at the code</p>
+    <p class="step-label">Choose a size</p>
+    <h2 class="step-title">Tap “Print this size” for the one you want</h2>
+
+    <div class="sizes">
+      <!-- Full page -->
+      <div class="size-tile">
+        <p class="size-name">Full Page</p>
+        <p class="size-dims">8½ × 11 in</p>
+        <div class="preview-box" data-size="letter" data-preview-w="230"></div>
+        <p class="size-use">Big counter sign, front door, or bulletin board.</p>
+        <button class="print-btn" onclick="printSize('letter')">🖨️ Print this size</button>
+      </div>
+
+      <!-- 5x7 -->
+      <div class="size-tile">
+        <p class="size-name">Table Sign</p>
+        <p class="size-dims">5 × 7 in</p>
+        <div class="preview-box" data-size="5x7" data-preview-w="150"></div>
+        <p class="size-use">Fits a photo frame on a table, desk, or counter.</p>
+        <button class="print-btn" onclick="printSize('5x7')">🖨️ Print this size</button>
+      </div>
+
+      <!-- Business card -->
+      <div class="size-tile">
+        <p class="size-name">Business Card</p>
+        <p class="size-dims">3½ × 2 in</p>
+        <div class="preview-box" data-size="card" data-preview-w="230"></div>
+        <p class="size-use">Hand one to each customer, or leave a stack by the register.</p>
+        <button class="print-btn" onclick="printSize('card')">🖨️ Print this size</button>
+      </div>
     </div>
 
-    <div class="button-row">
-      <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
-      <a class="btn btn-secondary" href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fcampfire-cabins&margin=10&format=png" download="campfire-cabins-qr-code.png">⬇️ Download PNG</a>
+    <div class="secondary-row">
+      <a class="link-btn" href="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fcampfire-cabins&margin=10&format=png" download="campfire-cabins-qr-code.png">⬇️ Download QR image (PNG)</a>
     </div>
 
     <div class="tip">
-      <strong>Tip:</strong> A 4x6 print on cardstock works great on a counter. Put one on your dashboard too — easy to hand to customers after a job.
+      <strong>Tip:</strong> When the print box opens, set it to <strong>Actual size</strong> (or 100%) and turn <strong>Background graphics ON</strong> so the color prints. Cardstock holds up best on a counter.
     </div>
 
     <a href="/r/campfire-cabins/" class="back">← Back to your review page</a>
   </div>
 </div>
+
+<!-- What actually gets sent to the printer (one size at a time) -->
+<div id="print-area"></div>
+
+<script>
+  var QR_SRC = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fcampfire-cabins&margin=8";
+  var BUSINESS_NAME = "Campfire Cabins";
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  // Build one printable card at the given size.
+  function cardHTML(size) {
+    var name = esc(BUSINESS_NAME);
+    if (size === 'card') {
+      return '<div class="print-card psize-card">' +
+               '<div class="pc-body">' +
+                 '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a review">' +
+                 '<div class="pc-textwrap">' +
+                   '<div class="pc-name-inline">' + name + '</div>' +
+                   '<div class="pc-sub">How\'d we do?</div>' +
+                   '<div class="pc-scan">Scan to<br>leave a review</div>' +
+                   '<div class="pc-help">Point your phone camera at the code</div>' +
+                   '<div class="pc-brand">Powered by 1to5reviewz</div>' +
+                 '</div>' +
+               '</div>' +
+             '</div>';
+    }
+    var cls = (size === '5x7') ? 'psize-5x7' : 'psize-letter';
+    return '<div class="print-card ' + cls + '">' +
+             '<div class="pc-band">' + name + '</div>' +
+             '<div class="pc-body">' +
+               '<div class="pc-sub">How\'d we do?</div>' +
+               '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a review">' +
+               '<div class="pc-scan">Scan to leave a review</div>' +
+               '<div class="pc-help">Open your phone\'s camera and point it at the code</div>' +
+               '<div class="pc-brand">Powered by 1to5reviewz</div>' +
+             '</div>' +
+           '</div>';
+  }
+
+  // Real card widths in CSS pixels (96px per inch) for computing preview scale.
+  var CARD_W = { letter: 7.5*96, '5x7': 5*96, card: 3.5*96 };
+  var CARD_H = { letter: 9.8*96, '5x7': 7*96, card: 2*96 };
+
+  // Render a scaled-down live preview inside each tile.
+  function buildPreviews() {
+    document.querySelectorAll('.preview-box').forEach(function(box){
+      var size = box.dataset.size;
+      var targetW = parseFloat(box.dataset.previewW);
+      var scale = targetW / CARD_W[size];
+      var scaler = document.createElement('div');
+      scaler.className = 'preview-scaler';
+      scaler.style.transform = 'scale(' + scale + ')';
+      scaler.innerHTML = cardHTML(size);
+      box.appendChild(scaler);
+      // Size the window to the scaled footprint.
+      box.style.width  = Math.round(CARD_W[size] * scale) + 'px';
+      box.style.height = Math.round(CARD_H[size] * scale) + 'px';
+    });
+  }
+
+  function printSize(size) {
+    document.getElementById('print-area').innerHTML = cardHTML(size);
+    // Give the QR image a moment to be in the DOM before printing.
+    setTimeout(function(){ window.print(); }, 120);
+  }
+
+  buildPreviews();
+</script>
 </body>
 </html>
