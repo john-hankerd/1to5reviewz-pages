@@ -3,7 +3,7 @@
   functions = "netlify/functions"
 
 [functions]
-  included_files = ["*.html"]  
+  included_files = ["*.html"]
 
 # all5starz.com → sales page
 [[redirects]]
@@ -36,6 +36,13 @@
   from = "/r/*"
   to = "/r/:splat/index.html"
   status = 200
+
+# Function source is not a public page.
+[[redirects]]
+  from = "/netlify/functions/*"
+  to = "/404"
+  status = 404
+  force = true
 
 # Security headers
 [[headers]]

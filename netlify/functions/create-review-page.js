@@ -5,12 +5,29 @@
 // so we don't have to read them from the filesystem (which is
 // what was failing on Netlify).
 //
-// Required env vars (all should already be set in Netlify):
-//   GITHUB_TOKEN, GITHUB_REPO, RESEND_API_KEY
+// Required env vars:
+//   MAKE_SECRET, GITHUB_TOKEN, GITHUB_REPO, RESEND_API_KEY
+// MAKE_SECRET is the same value stripe-webhook.js sends as JSON "secret".
+// Requests without that exact secret are rejected with 401.
+// The owner's email is stored in the Netlify Blobs store "review-owners"
+// before any public page is written. It is never committed.
 // =============================================================
 
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { saveOwner } = require("./utils/owner-directory");
+
+// stripe-webhook.js sends the shared secret as the JSON field "secret"
+// (the value of the MAKE_SECRET environment variable), not as a header.
+function secretMatches(provided) {
+  const expected = process.env.MAKE_SECRET || "";
+  const given = typeof provided === "string" ? provided : "";
+  if (!expected || !given) return false;
+  const actual = crypto.createHash("sha256").update(given, "utf8").digest();
+  const wanted = crypto.createHash("sha256").update(expected, "utf8").digest();
+  return crypto.timingSafeEqual(actual, wanted);
+}
 
 // Try several paths to find the template files (Netlify's file
 // layout is different than local). Returns the contents when found.
@@ -47,8 +64,22 @@ try {
 }
 
 exports.handler = async (event) => {
+  if (!event || event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  let data;
   try {
-    const data = JSON.parse(event.body);
+    data = JSON.parse(event.body || "{}");
+  } catch (e) {
+    return { statusCode: 400, body: "Invalid JSON" };
+  }
+
+  if (!secretMatches(data.secret)) {
+    return { statusCode: 401, body: "Unauthorized" };
+  }
+
+  try {
     const {
       business_name,
       owner_name,
@@ -80,10 +111,15 @@ exports.handler = async (event) => {
       REVIEW_URL: reviewUrl,
       REVIEW_URL_ENCODED: encodeURIComponent(reviewUrl),
       GOOGLE_REVIEW_URL: googleReviewUrl,
-      BUSINESS_EMAIL: email,
       OWNER_FIRST_NAME: ownerFirstName,
       PLACE_ID: place_id,
     };
+
+    // Store the owner address before the public page exists, so feedback
+    // never has to trust an address sent by the browser. A failed write
+    // aborts the signup (Stripe retries) instead of publishing a page
+    // that cannot receive notes.
+    await saveOwner(event, slug, String(email).trim(), business_name);
 
     // Each page carries a hidden marker with its place_id so we can
     // recognize the same business on a later signup or resend.
@@ -94,7 +130,7 @@ exports.handler = async (event) => {
     await putGitHubFile(`r/${slug}/text/index.html`,  fillTemplate(textTemplate, vars));
     await putGitHubFile(`r/${slug}/qr/index.html`,    fillTemplate(qrTemplate, vars));
 
-    await sendWelcomeEmail(vars);
+    await sendWelcomeEmail(vars, String(email).trim());
 
     return {
       statusCode: 200,
@@ -216,7 +252,7 @@ async function putGitHubFile(filePath, content) {
   }
 }
 
-async function sendWelcomeEmail(vars) {
+async function sendWelcomeEmail(vars, toEmail) {
   const html = fillTemplate(welcomeEmailTemplate, vars);
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -226,7 +262,7 @@ async function sendWelcomeEmail(vars) {
     },
     body: JSON.stringify({
       from: "All5Starz <info@all5starz.com>",
-      to: vars.BUSINESS_EMAIL,
+      to: [toEmail],
       subject: "You're all set! Your All5Starz review page is live",
       html,
     }),
