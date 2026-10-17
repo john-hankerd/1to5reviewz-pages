@@ -168,6 +168,13 @@
   }
   .private-btn:hover { background: #f3f4f6; }
   .private-btn:disabled { opacity: 0.6; cursor: default; }
+  .hp-field {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
   .thanks {
     padding: 8px 0 4px;
     color: #166534;
@@ -215,12 +222,16 @@
         <p class="private-prompt">Prefer to tell the owner directly?</p>
         <p class="private-help">Optional. You can still leave a Google review.</p>
         <form class="feedback-form" id="feedback-form">
+          <div class="hp-field" aria-hidden="true">
+            <label for="fb-website">Website</label>
+            <input type="text" id="fb-website" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <label for="fb-name">Your name</label>
-          <input type="text" id="fb-name" autocomplete="name" required>
+          <input type="text" id="fb-name" autocomplete="name" maxlength="100" required>
           <label for="fb-email">Your email</label>
-          <input type="email" id="fb-email" autocomplete="email" required>
+          <input type="email" id="fb-email" autocomplete="email" maxlength="254" required>
           <label for="fb-message">Your note</label>
-          <textarea id="fb-message" required></textarea>
+          <textarea id="fb-message" maxlength="2000" required></textarea>
           <button class="private-btn" id="private-btn" type="submit">Send private note</button>
         </form>
         <div class="thanks" id="thanks" hidden>
@@ -237,8 +248,6 @@
 
 <script>
   const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJJz9_niEJIIgRjQ4o19N78bY";
-  const BUSINESS_EMAIL = "hankerdcampgrounds@gmail.com";
-  const BUSINESS_NAME = "Hankerd's Horseshoe Lake Campground";
   const SLUG = "hankerds-horseshoe-lake-campground";
 
   const stars = document.querySelectorAll('.star');
@@ -288,10 +297,9 @@
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         slug: SLUG,
-        businessName: BUSINESS_NAME,
-        businessEmail: BUSINESS_EMAIL,
         rating: selectedRating,
-        name, email, message
+        name, email, message,
+        website: document.getElementById('fb-website').value
       })
     }).then((res) => {
       if (!res.ok) throw new Error('request failed');
