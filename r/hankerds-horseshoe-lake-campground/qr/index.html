@@ -219,27 +219,30 @@
     justify-content: center;
   }
   .print-card .pc-sub { color: var(--amber-dark); font-weight: 700; }
+  .print-card .pc-line { color: var(--text); font-weight: 500; max-width: 92%; line-height: 1.35; }
   .print-card .pc-qr { display: block; background: #fff; padding: 2%; }
   .print-card .pc-scan { color: var(--navy); font-weight: 800; }
-  .print-card .pc-help { color: var(--text-muted); }
+  .print-card .pc-help { color: var(--text-muted); max-width: 92%; word-break: break-all; }
   .print-card .pc-brand { color: #9ca3af; }
 
   /* Full page — 8.5x11 */
   .psize-letter { width: 7.5in; height: 9.8in; border-width: 5px; }
   .psize-letter .pc-band { height: 1.5in; font-size: 34pt; padding: 0 0.4in; line-height: 1.15; }
-  .psize-letter .pc-sub { font-size: 22pt; margin: 0.35in 0 0.15in; }
-  .psize-letter .pc-qr { width: 4.4in; height: 4.4in; }
-  .psize-letter .pc-scan { font-size: 26pt; margin: 0.25in 0 0.08in; }
-  .psize-letter .pc-help { font-size: 14pt; }
+  .psize-letter .pc-sub { font-size: 22pt; margin: 0.28in 0 0.08in; }
+  .psize-letter .pc-line { font-size: 14pt; margin: 0 0.45in 0.12in; }
+  .psize-letter .pc-qr { width: 3.8in; height: 3.8in; }
+  .psize-letter .pc-scan { font-size: 22pt; margin: 0.18in 0 0.06in; }
+  .psize-letter .pc-help { font-size: 12pt; }
   .psize-letter .pc-brand { font-size: 11pt; margin: 0.3in 0 0.15in; }
 
   /* Sign / photo frame — 5x7 */
   .psize-5x7 { width: 5in; height: 7in; border-width: 4px; }
   .psize-5x7 .pc-band { height: 1in; font-size: 20pt; padding: 0 0.25in; line-height: 1.1; }
-  .psize-5x7 .pc-sub { font-size: 14pt; margin: 0.22in 0 0.1in; }
-  .psize-5x7 .pc-qr { width: 3in; height: 3in; }
-  .psize-5x7 .pc-scan { font-size: 16pt; margin: 0.18in 0 0.05in; }
-  .psize-5x7 .pc-help { font-size: 10pt; }
+  .psize-5x7 .pc-sub { font-size: 14pt; margin: 0.16in 0 0.06in; }
+  .psize-5x7 .pc-line { font-size: 9pt; margin: 0 0.28in 0.08in; }
+  .psize-5x7 .pc-qr { width: 2.55in; height: 2.55in; }
+  .psize-5x7 .pc-scan { font-size: 13pt; margin: 0.1in 0 0.04in; }
+  .psize-5x7 .pc-help { font-size: 8pt; }
   .psize-5x7 .pc-brand { font-size: 8pt; margin: 0.18in 0 0.1in; }
 
   /* Business card — 3.5x2 (landscape) */
@@ -249,9 +252,9 @@
   .psize-card .pc-qr { width: 1.55in; height: 1.55in; padding: 0; flex: none; }
   .psize-card .pc-textwrap { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
   .psize-card .pc-name-inline { font-size: 10.5pt; font-weight: 800; color: var(--navy); line-height: 1.1; margin-bottom: 0.04in; }
-  .psize-card .pc-sub { font-size: 8pt; margin: 0 0 0.05in; }
-  .psize-card .pc-scan { font-size: 9pt; text-align: left; margin: 0.02in 0; }
-  .psize-card .pc-help { font-size: 6.5pt; text-align: left; }
+  .psize-card .pc-sub { font-size: 8pt; margin: 0 0 0.04in; }
+  .psize-card .pc-scan { font-size: 8pt; text-align: left; margin: 0.02in 0; line-height: 1.2; }
+  .psize-card .pc-help { font-size: 5.5pt; text-align: left; word-break: break-all; }
   .psize-card .pc-brand { font-size: 5.5pt; margin-top: 0.04in; }
 
   /* Hidden until print */
@@ -276,7 +279,7 @@
 <div class="container">
   <div class="header">
     <h1>🖨️ Print Your Review QR Code</h1>
-    <p>Pick a size below. Customers scan it to leave you a review.</p>
+    <p>Pick a size below. Customers scan it to leave you a Google review.</p>
   </div>
   <div class="card">
 
@@ -346,6 +349,7 @@
   var QR_SRC = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=8";
   var QR_PNG_SRC = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2F1to5reviewz.com%2Fr%2Fhankerds-horseshoe-lake-campground&margin=10&format=png";
   var BUSINESS_NAME = "Hankerd's Horseshoe Lake Campground";
+  var REVIEW_URL = "https://1to5reviewz.com/r/hankerds-horseshoe-lake-campground";
   var SLUG = "hankerds-horseshoe-lake-campground";
 
   // ---- Download / print the plain QR code ----
@@ -388,16 +392,15 @@
   // Build one printable card at the given size.
   function cardHTML(size) {
     var name = esc(BUSINESS_NAME);
+    var link = esc(REVIEW_URL);
     if (size === 'card') {
       return '<div class="print-card psize-card">' +
                '<div class="pc-body">' +
-                 '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a review">' +
+                 '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a Google review">' +
                  '<div class="pc-textwrap">' +
-                   '<div class="pc-name-inline">' + name + '</div>' +
-                   '<div class="pc-sub">How\'d we do?</div>' +
-                   '<div class="pc-scan">Scan to<br>leave a review</div>' +
-                   '<div class="pc-help">Point your phone camera at the code</div>' +
-                   '<div class="pc-brand">Powered by 1to5reviewz</div>' +
+                   '<div class="pc-sub">Thanks for choosing us!</div>' +
+                   '<div class="pc-scan">Scan to leave ' + name + ' a Google review</div>' +
+                   '<div class="pc-help">' + link + '</div>' +
                  '</div>' +
                '</div>' +
              '</div>';
@@ -406,11 +409,11 @@
     return '<div class="print-card ' + cls + '">' +
              '<div class="pc-band">' + name + '</div>' +
              '<div class="pc-body">' +
-               '<div class="pc-sub">How\'d we do?</div>' +
-               '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a review">' +
-               '<div class="pc-scan">Scan to leave a review</div>' +
-               '<div class="pc-help">Open your phone\'s camera and point it at the code</div>' +
-               '<div class="pc-brand">Powered by 1to5reviewz</div>' +
+               '<div class="pc-sub">How did we do?</div>' +
+               '<div class="pc-line">Your honest review helps other customers find ' + name + '.</div>' +
+               '<img class="pc-qr" src="' + QR_SRC + '" alt="Scan to leave a Google review">' +
+               '<div class="pc-scan">Scan to leave a Google review</div>' +
+               '<div class="pc-help">Or visit ' + link + '</div>' +
              '</div>' +
            '</div>';
   }

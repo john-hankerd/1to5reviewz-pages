@@ -1,8 +1,9 @@
 // =============================================================
 // netlify/functions/private-feedback.js
 //
-// Receives private feedback from a review page (customer rated
-// under 5 stars) and emails it straight to the business owner.
+// Receives an optional private note from a review page and emails
+// it straight to the business owner. The customer still has the
+// business's Google review link on that same page.
 // Uses the same Resend setup as create-review-page.js.
 //
 // Required env vars (already set on this Netlify site):
@@ -66,7 +67,7 @@ exports.handler = async (event) => {
       <p style="margin:0 0 18px;"><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : "(none given)"}</p>
       <div style="background:#f9fafb;border-left:4px solid #F59E0B;border-radius:6px;padding:16px 18px;color:#374151;line-height:1.6;white-space:pre-wrap;">${esc(message)}</div>
       ${email ? `<p style="margin:22px 0 0;"><a href="mailto:${esc(email)}?subject=${encodeURIComponent("Re: your visit to " + businessName)}" style="display:inline-block;background:#F59E0B;color:#1a2332;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">Reply to this customer</a></p>` : ""}
-      <p style="margin:24px 0 0;color:#9ca3af;font-size:12px;">This customer rated you under 5 stars, so instead of going to Google, their feedback came straight to you. Reach out and make it right.</p>
+      <p style="margin:24px 0 0;color:#9ca3af;font-size:12px;">This is an optional private note. This customer also has your Google review link and can leave a public review.</p>
     </div>
     <div style="background:#f9fafb;padding:16px 28px;text-align:center;color:#9ca3af;font-size:12px;">
       Powered by 1to5reviewz${slug ? " · " + esc(slug) : ""}
